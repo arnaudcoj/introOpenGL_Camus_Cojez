@@ -140,7 +140,8 @@ void GLApplication::update() {
   // => mettre à jour les données de l'application
   // avant l'affichage de la prochaine image (animation)
   // ...
-
+/*
+  //Q24
     if(_coeff >= 1.)
         _ascendingCoeff = false;
     else if (_coeff <= 0.)
@@ -150,6 +151,7 @@ void GLApplication::update() {
       _coeff += 0.1;
     else
       _coeff -= 0.1;
+      */
 
 }
 
