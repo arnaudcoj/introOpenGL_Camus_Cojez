@@ -4,6 +4,8 @@
 
 using namespace std;
 
+static const float PI = 3.14159;
+
 GLApplication::~GLApplication() {
 }
 
@@ -97,8 +99,9 @@ GLApplication::GLApplication() {
  }
    */
 
-    initStrip(20, -0.8, 0.8, -0.8, 0.8);
+//    initStrip(20, -0.8, 0.8, -0.8, 0.8);
 
+    initRing(50, 0.2, 0.8);
 }
 
 
@@ -334,6 +337,35 @@ void GLApplication::initStrip(int nbSlice,float xmin,float xmax,float ymin,float
     // point en haut à droite
     addPointToVector(_trianglePosition, xmax, ymax);
     addColorToVector(_triangleColor, 0, 0, 0);
+
+}
+
+void GLApplication::initRing(int nbSlice,float r0,float r1) {
+    int i;
+    float angleDiff = 2 * PI / nbSlice;
+    float angle = 0.;
+
+    // point avec angle = 0 (cercle interieur)
+    addPointToVector(_trianglePosition, r0, 0.);
+    addColorToVector(_triangleColor, 0., 0., 0.);
+
+    for(i = 0; i < nbSlice; i++) {
+
+        // point cercle exterieur
+        addPointToVector(_trianglePosition, r1 * std::cos(angle),  r1 * std::sin(angle));
+        addColorToVector(_triangleColor, 0., 0., 1. - ( (float) i / nbSlice));
+
+        angle += angleDiff;
+
+        // point cercle interieur
+        addPointToVector(_trianglePosition,  r0 * std::cos(angle), r0 * std::sin(angle));
+        addColorToVector(_triangleColor, 0., ((float) i / nbSlice), 0.);
+    }
+
+    // point avec angle = 2*PI (cercle exterieur)
+    addPointToVector(_trianglePosition, r1, 0.);
+    addColorToVector(_triangleColor, 0., 0., 0.);
+
 
 }
 
