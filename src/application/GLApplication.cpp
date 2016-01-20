@@ -8,27 +8,92 @@ GLApplication::~GLApplication() {
 }
 
 GLApplication::GLApplication() {
+
+    /*
+      _trianglePosition = {
+        -0.8,-0.5,0.0, // vertex 0
+        -0.2,-0.5,0.0, // 1
+        -0.5,0.5,0.0,  // 2
+
+        0.2,0.5,0.0,  // 3
+        0.8,0.5,0.0,  // 4
+        0.5,-0.5,0.0  // 5
+      };
+    */
+
+    /*
+     _trianglePosition = {
+       -0.8,-0.5,0.0, // vertex 0 anciennement vertex 0
+       0.8,0.5,0.0, // 1 anciennement 4
+       -0.5,0.5,0.0, // 2 anciennement 2
+       -0.2,-0.5,0.0, // 3 anciennement 1
+       0.5,-0.5,0.0, // 4 anciennement 5
+       0.2,0.5,0.0 // 5 anciennement 3
+    };
+*/
+/*
+     _trianglePosition = { -0.8,-0.8,0.0,
+                           0.8,0.8,0.0,
+                           0.0,0.2,0.0,
+                           -0.8,0.8,0.0,
+                           0.8,-0.8,0.0
+                         };
+
+
+     _elementData = {
+         0,
+         3,
+         2,
+         2,
+         1,
+         4
+    };
+
+   _triangleColor = {
+     0.3,0,0.6,1,
+     0.3,0,0.6,1,
+     0.0,0.9,0.0,1,
+
+     0.0,0.5,0.6,1,
+     0.0,0.5,0.6,1,
+     0.9,0.0,0.0,1
+   };
+
+*/
+
+/*
   _trianglePosition = {
-    -0.8,-0.5,0.0, // vertex 0
-    -0.2,-0.5,0.0, // 1
-    -0.5,0.5,0.0,  // 2
+     -0.8,-0.8,0.0,
+     -0.6,0.8,0.0,
+     -0.4,-0.6,0.0,
+     -0.2,0.6,0.0,
+     0.0,-0.8,0.0,
+     0.2,0.8,0.0,
+     0.4,-0.6,0.0,
+     0.6,0.6,0.0,
+     0.8,-0.8,0.0
+ };
+ */
 
-    0.2,0.5,0.0,  // 3
-    0.8,0.5,0.0,  // 4
-    0.5,-0.5,0.0  // 5
-  };
+    _trianglePosition = {
+       -0.8,-0.8,0.0,
+       -0.8,0.8,0.0,
+       -0.4,-0.8,0.0,
+       -0.4,0.8,0.0,
+       0.0,-0.8,0.0,
+       0.0,0.8,0.0,
+       0.4,-0.8,0.0,
+       0.4,0.8,0.0
+   };
 
-  _triangleColor = {
-    0.3,0,0.6,1,
-    0.3,0,0.6,1,
-    0.0,0.9,0.0,1,
-
-    0.0,0.5,0.6,1,
-    0.0,0.5,0.6,1,
-    0.9,0.0,0.0,1
-  };
-
-
+ // tous les sommets à rouge :
+ _triangleColor.clear();
+ for(unsigned int i=0;i<8;++i) {
+     _triangleColor.push_back(1);
+     _triangleColor.push_back(0);
+     _triangleColor.push_back(0);
+     _triangleColor.push_back(1);
+ }
 
 
 }
@@ -43,10 +108,10 @@ void GLApplication::initialize() {
   glClearColor(1,1,1,1);
 
   glLineWidth(2.0);
-  glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+  glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
 
-  _shader0=initProgram("simple");
+  _shader0 = initProgram("simple");
 
 
   initTriangleBuffer();
@@ -81,7 +146,9 @@ void GLApplication::draw() {
   glUseProgram(_shader0);
   glBindVertexArray(_triangleVAO);
 
-  glDrawArrays(GL_TRIANGLES,0,3);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 8);
+
+ /*glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);*/
 
   glBindVertexArray(0);
   glUseProgram(0);
@@ -156,6 +223,7 @@ GLuint GLApplication::initProgram(const std::string &filename) {
   }
 
   glBindAttribLocation(program,0,"position");
+  glBindAttribLocation(program,1,"color");
 
 
 
@@ -201,6 +269,13 @@ void GLApplication::initTriangleBuffer() {
   glBufferData(GL_ARRAY_BUFFER,_trianglePosition.size()*sizeof(float),_trianglePosition.data(),GL_STATIC_DRAW);
 
 
+  glGenBuffers(1,&_triangleColorBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER,_triangleColorBuffer);
+  glBufferData(GL_ARRAY_BUFFER,_triangleColor.size()*sizeof(float),_triangleColor.data(),GL_STATIC_DRAW);
+
+   glGenBuffers(1,&_elementBuffer);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_elementBuffer);
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER,_elementData.size()*sizeof(unsigned int),_elementData.data(),GL_STATIC_DRAW);
 
 }
 
@@ -209,12 +284,23 @@ void GLApplication::initTriangleVAO() {
   glGenVertexArrays(1,&_triangleVAO);
   glBindVertexArray(_triangleVAO);
 
+  //position
   glBindBuffer(GL_ARRAY_BUFFER,_trianglePositionBuffer);
   glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,0);
+
+  //color
+  glBindBuffer(GL_ARRAY_BUFFER,_triangleColorBuffer);
+  glVertexAttribPointer(1,4,GL_FLOAT,GL_FALSE,0,0);
+
+  //element
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_elementBuffer);
+  // pas besoin ! glVertexAttribPointer(2,1,GL_INT,GL_FALSE,0,0);
 
 
 
   glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+  //pas besoin ! glEnableVertexAttribArray(2);
 
 
   glBindVertexArray(0);
