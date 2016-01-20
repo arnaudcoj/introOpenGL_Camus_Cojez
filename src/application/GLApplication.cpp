@@ -75,6 +75,7 @@ GLApplication::GLApplication() {
  };
  */
 
+    /*
     _trianglePosition = {
        -0.8,-0.8,0.0,
        -0.8,0.8,0.0,
@@ -94,7 +95,9 @@ GLApplication::GLApplication() {
      _triangleColor.push_back(0);
      _triangleColor.push_back(1);
  }
+   */
 
+    initStrip(5, -0.8, 0.8, -0.8, 0.8);
 
 }
 
@@ -145,8 +148,7 @@ void GLApplication::draw() {
 
   glUseProgram(_shader0);
   glBindVertexArray(_triangleVAO);
-
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 8);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, _trianglePosition.size() / 3);
 
  /*glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);*/
 
@@ -307,4 +309,49 @@ void GLApplication::initTriangleVAO() {
 }
 
 
+void GLApplication::initStrip(int nbSlice,float xmin,float xmax,float ymin,float ymax) {
+    int i;
+    float sliceSize = (xmax - xmin) / nbSlice;
 
+    _trianglePosition.clear();
+
+    // point en bas à gauche
+    addPointToVector(_trianglePosition, xmin, ymin);
+    addColorToVector(_triangleColor, 1, 0, 0);
+
+
+    for(i = 0; i < nbSlice; i++) {
+
+        // tranche : point en haut à gauche
+        addPointToVector(_trianglePosition, xmin + i * sliceSize, ymax);
+        addColorToVector(_triangleColor, 1, 0, 0);
+
+        // tranche : point en bas à droite
+        addPointToVector(_trianglePosition, xmin + (i + 1) * sliceSize, ymin);
+        addColorToVector(_triangleColor, 1, 0, 0);
+    }
+
+    // point en haut à droite
+    addPointToVector(_trianglePosition, xmax, ymax);
+    addColorToVector(_triangleColor, 1, 0, 0);
+
+}
+
+/*
+ * Ajoute le x, y, z (0 par défaut) dans un vector
+ * */
+void addPointToVector(std::vector<float> &vect, float x, float y, float z) {
+    vect.push_back(x);
+    vect.push_back(y);
+    vect.push_back(z);
+}
+
+/*
+ * Ajoute le r, g, b, a (1 par défaut) dans un vector
+ * */
+void addColorToVector(std::vector<float> &vect, float r, float g, float b, float a) {
+    vect.push_back(r);
+    vect.push_back(g);
+    vect.push_back(b);
+    vect.push_back(a);
+}

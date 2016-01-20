@@ -28,6 +28,7 @@ public:
   void initTriangleBuffer();
   void initTriangleVAO();
   void initTexture();
+  void initStrip(int nbSlice,float xmin,float xmax,float ymin,float ymax);
 
 private:
   std::vector<float> _trianglePosition;
@@ -47,6 +48,11 @@ private:
 
 
 };
+
+//utils
+void addPointToVector(std::vector<float> &vect, float x, float y, float z = 0.);
+void addColorToVector(std::vector<float> &vect, float r, float g, float b, float a = 1.);
+
 
 #endif // GLAPPLICATION_H
 
