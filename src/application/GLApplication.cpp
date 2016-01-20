@@ -97,7 +97,7 @@ GLApplication::GLApplication() {
  }
    */
 
-    initStrip(5, -0.8, 0.8, -0.8, 0.8);
+    initStrip(20, -0.8, 0.8, -0.8, 0.8);
 
 }
 
@@ -111,7 +111,7 @@ void GLApplication::initialize() {
   glClearColor(1,1,1,1);
 
   glLineWidth(2.0);
-  glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+  glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
 
   _shader0 = initProgram("simple");
@@ -317,23 +317,23 @@ void GLApplication::initStrip(int nbSlice,float xmin,float xmax,float ymin,float
 
     // point en bas à gauche
     addPointToVector(_trianglePosition, xmin, ymin);
-    addColorToVector(_triangleColor, 1, 0, 0);
+    addColorToVector(_triangleColor, 0., 0., 0.);
 
 
     for(i = 0; i < nbSlice; i++) {
 
         // tranche : point en haut à gauche
         addPointToVector(_trianglePosition, xmin + i * sliceSize, ymax);
-        addColorToVector(_triangleColor, 1, 0, 0);
+        addColorToVector(_triangleColor, 0., 0., 1. - ( (float) i / nbSlice));
 
         // tranche : point en bas à droite
         addPointToVector(_trianglePosition, xmin + (i + 1) * sliceSize, ymin);
-        addColorToVector(_triangleColor, 1, 0, 0);
+        addColorToVector(_triangleColor, 0., ((float) i / nbSlice), 0.);
     }
 
     // point en haut à droite
     addPointToVector(_trianglePosition, xmax, ymax);
-    addColorToVector(_triangleColor, 1, 0, 0);
+    addColorToVector(_triangleColor, 0, 0, 0);
 
 }
 
