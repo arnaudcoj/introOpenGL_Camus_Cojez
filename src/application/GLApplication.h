@@ -37,6 +37,9 @@ private:
   std::vector<float> _triangleTexCoord;
   std::vector<unsigned int> _elementData;
 
+  float _coeff;
+  bool _ascendingCoeff;
+
   GLuint _trianglePositionBuffer;
   GLuint _triangleColorBuffer;
   GLuint _triangleTexCoordBuffer;

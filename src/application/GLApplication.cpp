@@ -9,7 +9,7 @@ static const float PI = 3.14159;
 GLApplication::~GLApplication() {
 }
 
-GLApplication::GLApplication() {
+GLApplication::GLApplication() : _coeff(1.0){
 
     /*
       _trianglePosition = {
@@ -141,6 +141,15 @@ void GLApplication::update() {
   // avant l'affichage de la prochaine image (animation)
   // ...
 
+    if(_coeff >= 1.)
+        _ascendingCoeff = false;
+    else if (_coeff <= 0.)
+        _ascendingCoeff = true;
+
+    if(_ascendingCoeff)
+      _coeff += 0.1;
+    else
+      _coeff -= 0.1;
 
 }
 
@@ -151,6 +160,8 @@ void GLApplication::draw() {
 
   glUseProgram(_shader0);
   glBindVertexArray(_triangleVAO);
+  glUniform1f(glGetUniformLocation(_shader0,"coeff"),_coeff);
+
   glDrawArrays(GL_TRIANGLE_STRIP, 0, _trianglePosition.size() / 3);
 
  /*glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);*/
