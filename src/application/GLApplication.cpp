@@ -267,6 +267,7 @@ GLuint GLApplication::initProgram(const std::string &filename) {
 
   glBindAttribLocation(program,0,"position");
   glBindAttribLocation(program,1,"color");
+  glBindAttribLocation(program,2,"texCoord");
 
 
 
@@ -320,6 +321,9 @@ void GLApplication::initTriangleBuffer() {
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_elementBuffer);
    glBufferData(GL_ELEMENT_ARRAY_BUFFER,_elementData.size()*sizeof(unsigned int),_elementData.data(),GL_STATIC_DRAW);
 
+   glGenBuffers(1,&_triangleTexCoordBuffer);
+   glBindBuffer(GL_ARRAY_BUFFER,_triangleTexCoordBuffer);
+   glBufferData(GL_ARRAY_BUFFER,_triangleTexCoord.size()*sizeof(float),_triangleTexCoord.data(),GL_STATIC_DRAW);
 }
 
 
@@ -339,6 +343,10 @@ void GLApplication::initTriangleVAO() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_elementBuffer);
   // pas besoin ! glVertexAttribPointer(2,1,GL_INT,GL_FALSE,0,0);
 
+
+  //texture
+  glBindBuffer(GL_ARRAY_BUFFER,_triangleTexCoordBuffer);
+  glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,0,0);
 
 
   glEnableVertexAttribArray(0);
