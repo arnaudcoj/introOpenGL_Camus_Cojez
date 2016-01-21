@@ -9,7 +9,7 @@ static const float PI = 3.14159;
 GLApplication::~GLApplication() {
 }
 
-GLApplication::GLApplication() : _coeff(1.0){
+GLApplication::GLApplication() : _animation(false), _coeff(1.0){
 
     /*
       _trianglePosition = {
@@ -101,7 +101,31 @@ GLApplication::GLApplication() : _coeff(1.0){
 
 //    initStrip(20, -0.8, 0.8, -0.8, 0.8);
 
-    initRing(50, 0.2, 0.8);
+//    initRing(50, 0.2, 0.8);
+
+   _trianglePosition = {
+
+       // rectangle tracé avec TRIANGLE_STRIP
+       -0.6,-0.8,0,
+       -0.6,0.8,0,
+       0.6,-0.8,0,
+       0.6,0.8,0
+   };
+   _triangleColor = {
+       // tous les sommets en rouge
+       1,0,0,1,
+       1,0,0,1,
+       1,0,0,1,
+       1,0,0,1,
+   };
+
+   _triangleTexCoord = {
+       // coordonnées de texture en chaque sommet
+       0,1,
+       0,0,
+       1,1,
+       1,0
+   };
 }
 
 
@@ -140,18 +164,19 @@ void GLApplication::update() {
   // => mettre à jour les données de l'application
   // avant l'affichage de la prochaine image (animation)
   // ...
-/*
-  //Q24
-    if(_coeff >= 1.)
-        _ascendingCoeff = false;
-    else if (_coeff <= 0.)
-        _ascendingCoeff = true;
 
-    if(_ascendingCoeff)
-      _coeff += 0.1;
-    else
-      _coeff -= 0.1;
-      */
+  //Q24
+    if(_animation) {
+        if(_coeff >= 1.)
+            _ascendingCoeff = false;
+        else if (_coeff <= 0.)
+            _ascendingCoeff = true;
+
+        if(_ascendingCoeff)
+          _coeff += 0.1;
+        else
+          _coeff -= 0.1;
+      }
 
 }
 

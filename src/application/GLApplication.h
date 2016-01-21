@@ -37,6 +37,7 @@ private:
   std::vector<float> _triangleTexCoord;
   std::vector<unsigned int> _elementData;
 
+  bool _animation;
   float _coeff;
   bool _ascendingCoeff;
 
