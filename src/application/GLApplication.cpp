@@ -186,13 +186,16 @@ void GLApplication::draw() {
   glClear(GL_COLOR_BUFFER_BIT);
 
   glUseProgram(_shader0);
+
+  glActiveTexture(GL_TEXTURE0); // on travaille avec l'unité de texture 0
+  glBindTexture(GL_TEXTURE_2D,_textureId); // l'unité de texture 0 correspond à la texture _textureId // (le fragment shader manipule des unités de textures et non les identifiants de texture directement)
+
+  // dans l'instruction suivante, _textureId correspond à l'image "lagoon.jpg"; cf GLApplication::initTexture pour l'initialisation de _textureId
+  glUniform1f(glGetUniformLocation(_shader0,"texture"),0); // on affecte la valeur du sampler2D du fragment shader à l'unité de texture 0.
+
   glBindVertexArray(_triangleVAO);
-  glUniform1f(glGetUniformLocation(_shader0,"coeff"),_coeff);
 
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, _trianglePosition.size() / 3);
-
- /*glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);*/
-
+  glDrawArrays(GL_TRIANGLE_STRIP,0,_trianglePosition.size()/3);
   glBindVertexArray(0);
   glUseProgram(0);
 
