@@ -31,6 +31,8 @@ public:
   void initTexture();
   void initStrip(int nbSlice,float xmin,float xmax,float ymin,float ymax);
   void initRing(int nbSlice,float r0,float r1);
+  void initRingText(int nbSlice,float r0,float r1);
+
 private:
   std::vector<float> _trianglePosition;
   std::vector<float> _triangleColor;
@@ -57,7 +59,7 @@ private:
 //utils
 void addPointToVector(std::vector<float> &vect, float x, float y, float z = 0.);
 void addColorToVector(std::vector<float> &vect, float r, float g, float b, float a = 1.);
-
+void addPointTextToVector(std::vector<float> &vect, float x, float y);
 
 #endif // GLAPPLICATION_H
 
