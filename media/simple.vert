@@ -11,7 +11,7 @@ uniform float coeff;
 
 void main() {
     vec3 newPosition = position;
-    newPosition *= coeff;
+    //newPosition *= coeff;
 
     fColor = color;
     fTexCoord = texCoord;

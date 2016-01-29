@@ -9,7 +9,7 @@ static const float PI = 3.14159;
 GLApplication::~GLApplication() {
 }
 
-GLApplication::GLApplication() : _animation(false), _coeff(1.0){
+GLApplication::GLApplication() : _animation(true), _coeff(1.0){
 
     /*
       _trianglePosition = {
@@ -101,7 +101,6 @@ GLApplication::GLApplication() : _animation(false), _coeff(1.0){
 
 //    initStrip(20, -0.8, 0.8, -0.8, 0.8);
 
-    initRingText(40, 0.2, 0.8);
 /*
    _trianglePosition = {
 
@@ -127,6 +126,9 @@ GLApplication::GLApplication() : _animation(false), _coeff(1.0){
        0.5,1
    };
    */
+//    initRingText(40, 0.2, 0.8);
+//   initRingText2(40, 0.2, 0.8);
+   initRingText3(40, 0.2, 0.8);
 }
 
 
@@ -399,7 +401,7 @@ void GLApplication::initRing(int nbSlice,float r0,float r1) {
     float angle = 0.;
 
     _trianglePosition.clear();
-    _triangleTexCoord.clear();
+    _triangleColor.clear();
 
     // point avec angle = 0 (cercle interieur)
     addPointToVector(_trianglePosition, r0, 0.);
@@ -429,11 +431,14 @@ void GLApplication::initRingText(int nbSlice,float r0,float r1) {
     float angleDiff = 2 * PI / nbSlice;
     float angle = 0.;
 
+    _trianglePosition.clear();
+    _triangleTexCoord.clear();
+
     // point avec angle = 0 (cercle interieur)
     addPointToVector(_trianglePosition, r0, 0.);
     addPointTextToVector(_triangleTexCoord, 0., 1.);
 
-    for(i = 0; i < nbSlice; i++) {
+    for(i = 0.25; i < nbSlice; i++) {
 
         // point cercle exterieur
         addPointToVector(_trianglePosition, r1 * std::cos(angle),  r1 * std::sin(angle));
@@ -452,32 +457,73 @@ void GLApplication::initRingText(int nbSlice,float r0,float r1) {
 
 }
 
-//todo
 void GLApplication::initRingText2(int nbSlice,float r0,float r1) {
     int i;
     float angleDiff = 2 * PI / nbSlice;
     float angle = 0.;
 
+    _trianglePosition.clear();
+    _triangleTexCoord.clear();
+    _triangleColor.clear();
+
+
     // point avec angle = 0 (cercle interieur)
     addPointToVector(_trianglePosition, r0, 0.);
-    addPointTextToVector(_triangleTexCoord, 0., 1.);
+    addPointTextToVector(_triangleTexCoord, (r0 + 1.) / 2., 0.5);
 
     for(i = 0; i < nbSlice; i++) {
 
         // point cercle exterieur
         addPointToVector(_trianglePosition, r1 * std::cos(angle),  r1 * std::sin(angle));
-        addPointTextToVector(_triangleTexCoord, ( (float) i / nbSlice), 0.);
+        addPointTextToVector(_triangleTexCoord, (r1 * std::cos(angle) + 1.) /2. , (r1 * std::sin(angle) + 1.) / 2.);
 
         angle += angleDiff;
 
         // point cercle interieur
-        addPointToVector(_trianglePosition,  r0 * std::cos(angle), r0 * std::sin(angle));
-        addPointTextToVector(_triangleTexCoord, ( (float) i / nbSlice), 1.);
+        addPointToVector(_trianglePosition, r0 * std::cos(angle), r0 * std::sin(angle));
+        addPointTextToVector(_triangleTexCoord, (r0 * std::cos(angle) + 1.) / 2., (r0 * std::sin(angle) + 1.) / 2.);
     }
 
     // point avec angle = 2*PI (cercle exterieur)
     addPointToVector(_trianglePosition, r1, 0.);
-    addPointTextToVector(_triangleTexCoord, 1., 0.);
+    addPointTextToVector(_triangleTexCoord, (r1 + 1.) / 2., 0.5);
+
+}
+
+void GLApplication::initRingText3(int nbSlice,float r0,float r1) {
+    int i;
+    float angleDiff = 2 * PI / nbSlice;
+    float angle = 0.;
+
+    _trianglePosition.clear();
+    _triangleTexCoord.clear();
+    _triangleColor.clear();
+
+
+    // point avec angle = 0 (cercle interieur)
+    addPointToVector(_trianglePosition, r0, 0.);
+    addPointTextToVector(_triangleTexCoord, (r0 + 1.) / 2., 0.5);
+    addColorToVector(_triangleColor, 0., 0., 0.);
+
+    for(i = 0; i < nbSlice; i++) {
+
+        // point cercle exterieur
+        addPointToVector(_trianglePosition, r1 * std::cos(angle),  r1 * std::sin(angle));
+        addPointTextToVector(_triangleTexCoord, (r1 * std::cos(angle) + 1.) /2. , (r1 * std::sin(angle) + 1.) / 2.);
+        addColorToVector(_triangleColor, 0., ((float) i / nbSlice), 0.);
+
+        angle += angleDiff;
+
+        // point cercle interieur
+        addPointToVector(_trianglePosition, r0 * std::cos(angle), r0 * std::sin(angle));
+        addPointTextToVector(_triangleTexCoord, (r0 * std::cos(angle) + 1.) / 2., (r0 * std::sin(angle) + 1.) / 2.);
+        addColorToVector(_triangleColor, 0., 0., 1. - ( (float) i / nbSlice));
+    }
+
+    // point avec angle = 2*PI (cercle exterieur)
+    addPointToVector(_trianglePosition, r1, 0.);
+    addPointTextToVector(_triangleTexCoord, (r1 + 1.) / 2., 0.5);
+    addColorToVector(_triangleColor, 0., 0., 0.);
 
 }
 

@@ -32,6 +32,8 @@ public:
   void initStrip(int nbSlice,float xmin,float xmax,float ymin,float ymax);
   void initRing(int nbSlice,float r0,float r1);
   void initRingText(int nbSlice,float r0,float r1);
+  void initRingText2(int nbSlice,float r0,float r1);
+  void initRingText3(int nbSlice,float r0,float r1);
 
 private:
   std::vector<float> _trianglePosition;
