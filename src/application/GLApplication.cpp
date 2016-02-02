@@ -4,10 +4,12 @@
 
 using namespace std;
 
+static const float PI = 3.14159;
+
 GLApplication::~GLApplication() {
 }
 
-GLApplication::GLApplication() {
+GLApplication::GLApplication() : _animation(true), _coeff(1.0){
 
     /*
       _trianglePosition = {
@@ -75,6 +77,7 @@ GLApplication::GLApplication() {
  };
  */
 
+    /*
     _trianglePosition = {
        -0.8,-0.8,0.0,
        -0.8,0.8,0.0,
@@ -94,8 +97,38 @@ GLApplication::GLApplication() {
      _triangleColor.push_back(0);
      _triangleColor.push_back(1);
  }
+   */
 
+//    initStrip(20, -0.8, 0.8, -0.8, 0.8);
 
+/*
+   _trianglePosition = {
+
+       // rectangle tracé avec TRIANGLE_STRIP
+       -0.6,-0.8,0,
+       -0.6,0.8,0,
+       0.6,-0.8,0,
+       0.6,0.8,0
+   };
+   _triangleColor = {
+       // tous les sommets en rouge
+       1,0,0,1,
+       1,0,0,1,
+       1,0,0,1,
+       1,0,0,1,
+   };
+
+   _triangleTexCoord = {
+       // coordonnées de texture en chaque sommet
+       0,0,
+       0,1,
+       0.5,0,
+       0.5,1
+   };
+   */
+//    initRingText(40, 0.2, 0.8);
+//   initRingText2(40, 0.2, 0.8);
+   initRingText3(40, 0.2, 0.8);
 }
 
 
@@ -108,7 +141,7 @@ void GLApplication::initialize() {
   glClearColor(1,1,1,1);
 
   glLineWidth(2.0);
-  glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+  glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
 
   _shader0 = initProgram("simple");
@@ -135,6 +168,18 @@ void GLApplication::update() {
   // avant l'affichage de la prochaine image (animation)
   // ...
 
+  //Q24
+    if(_animation) {
+        if(_coeff >= 1.)
+            _ascendingCoeff = false;
+        else if (_coeff <= 0.)
+            _ascendingCoeff = true;
+
+        if(_ascendingCoeff)
+          _coeff += 0.1;
+        else
+          _coeff -= 0.1;
+      }
 
 }
 
@@ -144,12 +189,17 @@ void GLApplication::draw() {
   glClear(GL_COLOR_BUFFER_BIT);
 
   glUseProgram(_shader0);
+
+  glActiveTexture(GL_TEXTURE0); // on travaille avec l'unité de texture 0
+  glBindTexture(GL_TEXTURE_2D,_textureId); // l'unité de texture 0 correspond à la texture _textureId // (le fragment shader manipule des unités de textures et non les identifiants de texture directement)
+
+  // dans l'instruction suivante, _textureId correspond à l'image "lagoon.jpg"; cf GLApplication::initTexture pour l'initialisation de _textureId
+  glUniform1f(glGetUniformLocation(_shader0,"coeff"),_coeff);
+  glUniform1f(glGetUniformLocation(_shader0,"texture"),0); // on affecte la valeur du sampler2D du fragment shader à l'unité de texture 0.
+
   glBindVertexArray(_triangleVAO);
 
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 8);
-
- /*glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);*/
-
+  glDrawArrays(GL_TRIANGLE_STRIP,0,_trianglePosition.size()/3);
   glBindVertexArray(0);
   glUseProgram(0);
 
@@ -224,6 +274,7 @@ GLuint GLApplication::initProgram(const std::string &filename) {
 
   glBindAttribLocation(program,0,"position");
   glBindAttribLocation(program,1,"color");
+  glBindAttribLocation(program,2,"texCoord");
 
 
 
@@ -277,6 +328,9 @@ void GLApplication::initTriangleBuffer() {
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_elementBuffer);
    glBufferData(GL_ELEMENT_ARRAY_BUFFER,_elementData.size()*sizeof(unsigned int),_elementData.data(),GL_STATIC_DRAW);
 
+   glGenBuffers(1,&_triangleTexCoordBuffer);
+   glBindBuffer(GL_ARRAY_BUFFER,_triangleTexCoordBuffer);
+   glBufferData(GL_ARRAY_BUFFER,_triangleTexCoord.size()*sizeof(float),_triangleTexCoord.data(),GL_STATIC_DRAW);
 }
 
 
@@ -293,18 +347,210 @@ void GLApplication::initTriangleVAO() {
   glVertexAttribPointer(1,4,GL_FLOAT,GL_FALSE,0,0);
 
   //element
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_elementBuffer);
+ // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_elementBuffer);
   // pas besoin ! glVertexAttribPointer(2,1,GL_INT,GL_FALSE,0,0);
 
+
+  //texture
+  glBindBuffer(GL_ARRAY_BUFFER,_triangleTexCoordBuffer);
+  glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,0,0);
 
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
-  //pas besoin ! glEnableVertexAttribArray(2);
+  //pas besoin !
+  glEnableVertexAttribArray(2);
 
 
   glBindVertexArray(0);
 }
 
 
+void GLApplication::initStrip(int nbSlice,float xmin,float xmax,float ymin,float ymax) {
+    int i;
+    float sliceSize = (xmax - xmin) / nbSlice;
 
+    _trianglePosition.clear();
+    _triangleColor.clear();
+
+    // point en bas à gauche
+    addPointToVector(_trianglePosition, xmin, ymin);
+    addColorToVector(_triangleColor, 0., 0., 0.);
+
+
+    for(i = 0; i < nbSlice; i++) {
+
+        // tranche : point en haut à gauche
+        addPointToVector(_trianglePosition, xmin + i * sliceSize, ymax);
+        addColorToVector(_triangleColor, 0., 0., 1. - ( (float) i / nbSlice));
+
+        // tranche : point en bas à droite
+        addPointToVector(_trianglePosition, xmin + (i + 1) * sliceSize, ymin);
+        addColorToVector(_triangleColor, 0., ((float) i / nbSlice), 0.);
+    }
+
+    // point en haut à droite
+    addPointToVector(_trianglePosition, xmax, ymax);
+    addColorToVector(_triangleColor, 0, 0, 0);
+
+}
+
+void GLApplication::initRing(int nbSlice,float r0,float r1) {
+    int i;
+    float angleDiff = 2 * PI / nbSlice;
+    float angle = 0.;
+
+    _trianglePosition.clear();
+    _triangleColor.clear();
+
+    // point avec angle = 0 (cercle interieur)
+    addPointToVector(_trianglePosition, r0, 0.);
+    addColorToVector(_triangleColor, 0., 0., 0.);
+
+    for(i = 0; i < nbSlice; i++) {
+
+        // point cercle exterieur
+        addPointToVector(_trianglePosition, r1 * std::cos(angle),  r1 * std::sin(angle));
+        addColorToVector(_triangleColor, 0., 0., 1. - ( (float) i / nbSlice));
+
+        angle += angleDiff;
+
+        // point cercle interieur
+        addPointToVector(_trianglePosition,  r0 * std::cos(angle), r0 * std::sin(angle));
+        addColorToVector(_triangleColor, 0., ((float) i / nbSlice), 0.);
+    }
+
+    // point avec angle = 2*PI (cercle exterieur)
+    addPointToVector(_trianglePosition, r1, 0.);
+    addColorToVector(_triangleColor, 0., 0., 0.);
+
+}
+
+void GLApplication::initRingText(int nbSlice,float r0,float r1) {
+    int i;
+    float angleDiff = 2 * PI / nbSlice;
+    float angle = 0.;
+
+    _trianglePosition.clear();
+    _triangleTexCoord.clear();
+
+    // point avec angle = 0 (cercle interieur)
+    addPointToVector(_trianglePosition, r0, 0.);
+    addPointTextToVector(_triangleTexCoord, 0., 1.);
+
+    for(i = 0.25; i < nbSlice; i++) {
+
+        // point cercle exterieur
+        addPointToVector(_trianglePosition, r1 * std::cos(angle),  r1 * std::sin(angle));
+        addPointTextToVector(_triangleTexCoord, ( (float) i / nbSlice), 0.);
+
+        angle += angleDiff;
+
+        // point cercle interieur
+        addPointToVector(_trianglePosition,  r0 * std::cos(angle), r0 * std::sin(angle));
+        addPointTextToVector(_triangleTexCoord, ( (float) i / nbSlice), 1.);
+    }
+
+    // point avec angle = 2*PI (cercle exterieur)
+    addPointToVector(_trianglePosition, r1, 0.);
+    addPointTextToVector(_triangleTexCoord, 1., 0.);
+
+}
+
+void GLApplication::initRingText2(int nbSlice,float r0,float r1) {
+    int i;
+    float angleDiff = 2 * PI / nbSlice;
+    float angle = 0.;
+
+    _trianglePosition.clear();
+    _triangleTexCoord.clear();
+    _triangleColor.clear();
+
+
+    // point avec angle = 0 (cercle interieur)
+    addPointToVector(_trianglePosition, r0, 0.);
+    addPointTextToVector(_triangleTexCoord, (r0 + 1.) / 2., 0.5);
+
+    for(i = 0; i < nbSlice; i++) {
+
+        // point cercle exterieur
+        addPointToVector(_trianglePosition, r1 * std::cos(angle),  r1 * std::sin(angle));
+        addPointTextToVector(_triangleTexCoord, (r1 * std::cos(angle) + 1.) /2. , (r1 * std::sin(angle) + 1.) / 2.);
+
+        angle += angleDiff;
+
+        // point cercle interieur
+        addPointToVector(_trianglePosition, r0 * std::cos(angle), r0 * std::sin(angle));
+        addPointTextToVector(_triangleTexCoord, (r0 * std::cos(angle) + 1.) / 2., (r0 * std::sin(angle) + 1.) / 2.);
+    }
+
+    // point avec angle = 2*PI (cercle exterieur)
+    addPointToVector(_trianglePosition, r1, 0.);
+    addPointTextToVector(_triangleTexCoord, (r1 + 1.) / 2., 0.5);
+
+}
+
+void GLApplication::initRingText3(int nbSlice,float r0,float r1) {
+    int i;
+    float angleDiff = 2 * PI / nbSlice;
+    float angle = 0.;
+
+    _trianglePosition.clear();
+    _triangleTexCoord.clear();
+    _triangleColor.clear();
+
+
+    // point avec angle = 0 (cercle interieur)
+    addPointToVector(_trianglePosition, r0, 0.);
+    addPointTextToVector(_triangleTexCoord, (r0 + 1.) / 2., 0.5);
+    addColorToVector(_triangleColor, 0., 0., 0.);
+
+    for(i = 0; i < nbSlice; i++) {
+
+        // point cercle exterieur
+        addPointToVector(_trianglePosition, r1 * std::cos(angle),  r1 * std::sin(angle));
+        addPointTextToVector(_triangleTexCoord, (r1 * std::cos(angle) + 1.) /2. , (r1 * std::sin(angle) + 1.) / 2.);
+        addColorToVector(_triangleColor, 0., ((float) i / nbSlice), 0.);
+
+        angle += angleDiff;
+
+        // point cercle interieur
+        addPointToVector(_trianglePosition, r0 * std::cos(angle), r0 * std::sin(angle));
+        addPointTextToVector(_triangleTexCoord, (r0 * std::cos(angle) + 1.) / 2., (r0 * std::sin(angle) + 1.) / 2.);
+        addColorToVector(_triangleColor, 0., 0., 1. - ( (float) i / nbSlice));
+    }
+
+    // point avec angle = 2*PI (cercle exterieur)
+    addPointToVector(_trianglePosition, r1, 0.);
+    addPointTextToVector(_triangleTexCoord, (r1 + 1.) / 2., 0.5);
+    addColorToVector(_triangleColor, 0., 0., 0.);
+
+}
+
+/*
+ * Ajoute le x, y, z (0 par défaut) dans un vector
+ * */
+void addPointToVector(std::vector<float> &vect, float x, float y, float z) {
+    vect.push_back(x);
+    vect.push_back(y);
+    vect.push_back(z);
+}
+
+/*
+ * Ajoute le x, y dans un vector
+ * */
+void addPointTextToVector(std::vector<float> &vect, float x, float y) {
+    vect.push_back(x);
+    vect.push_back(y);
+}
+
+
+/*
+ * Ajoute le r, g, b, a (1 par défaut) dans un vector
+ * */
+void addColorToVector(std::vector<float> &vect, float r, float g, float b, float a) {
+    vect.push_back(r);
+    vect.push_back(g);
+    vect.push_back(b);
+    vect.push_back(a);
+}
