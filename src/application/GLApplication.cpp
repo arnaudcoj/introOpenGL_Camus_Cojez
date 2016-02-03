@@ -11,7 +11,7 @@ GLApplication::~GLApplication() {
 
 GLApplication::GLApplication() : _animation(true), _coeff(1.0){
 
-    /*
+/*
       _trianglePosition = {
         -0.8,-0.5,0.0, // vertex 0
         -0.2,-0.5,0.0, // 1
@@ -21,8 +21,10 @@ GLApplication::GLApplication() : _animation(true), _coeff(1.0){
         0.8,0.5,0.0,  // 4
         0.5,-0.5,0.0  // 5
       };
-    */
+*/
 
+
+//Q12
     /*
      _trianglePosition = {
        -0.8,-0.5,0.0, // vertex 0 anciennement vertex 0
@@ -32,15 +34,33 @@ GLApplication::GLApplication() : _animation(true), _coeff(1.0){
        0.5,-0.5,0.0, // 4 anciennement 5
        0.2,0.5,0.0 // 5 anciennement 3
     };
-*/
-/*
-     _trianglePosition = { -0.8,-0.8,0.0,
-                           0.8,0.8,0.0,
-                           0.0,0.2,0.0,
-                           -0.8,0.8,0.0,
-                           0.8,-0.8,0.0
-                         };
 
+     _elementData = {
+      0, 3, 2, 5, 1, 4
+     };
+*/
+
+//Q16
+    /*
+    _trianglePosition = {
+     -0.8,-0.8,0.0,
+     0.8,0.8,0.0,
+     0.0,0.2,0.0,
+     -0.8,0.8,0.0,
+     0.8,-0.8,0.0,
+     0.0,0.2,0.0
+ };
+ */
+
+//Q16_2
+    /*
+    _trianglePosition = {
+        -0.8,-0.8,0.0,
+        0.8,0.8,0.0,
+        0.0,0.2,0.0,
+        -0.8,0.8,0.0,
+        0.8,-0.8,0.0
+    };
 
      _elementData = {
          0,
@@ -50,7 +70,9 @@ GLApplication::GLApplication() : _animation(true), _coeff(1.0){
          1,
          4
     };
+     */
 
+    /*
    _triangleColor = {
      0.3,0,0.6,1,
      0.3,0,0.6,1,
@@ -60,9 +82,9 @@ GLApplication::GLApplication() : _animation(true), _coeff(1.0){
      0.0,0.5,0.6,1,
      0.9,0.0,0.0,1
    };
-
 */
 
+//Q17
 /*
   _trianglePosition = {
      -0.8,-0.8,0.0,
@@ -75,9 +97,19 @@ GLApplication::GLApplication() : _animation(true), _coeff(1.0){
      0.6,0.6,0.0,
      0.8,-0.8,0.0
  };
- */
 
-    /*
+  // tous les sommets à rouge :
+  _triangleColor.clear();
+  for(unsigned int i=0;i<9;++i) {
+      _triangleColor.push_back(1);
+      _triangleColor.push_back(0);
+      _triangleColor.push_back(0);
+      _triangleColor.push_back(1);
+  }
+*/
+
+//Q20
+/*
     _trianglePosition = {
        -0.8,-0.8,0.0,
        -0.8,0.8,0.0,
@@ -97,11 +129,67 @@ GLApplication::GLApplication() : _animation(true), _coeff(1.0){
      _triangleColor.push_back(0);
      _triangleColor.push_back(1);
  }
-   */
+*/
 
+//Q21
 //    initStrip(20, -0.8, 0.8, -0.8, 0.8);
 
+//Q22
+//    initStrip2(20, -0.8, 0.8, -0.8, 0.8);
+
+//Q23
+//    initRing(40, 0.2, 0.8);
+
+//Q25
 /*
+ _trianglePosition = { // rectangle tracé avec TRIANGLE_STRIP
+                       -0.6,-0.8,0,
+                       -0.6,0.8,0,
+                       0.6,-0.8,0,
+                       0.6,0.8,0
+                     };
+
+ _triangleColor = { // tous les sommets en rouge
+                    1,0,0,1,
+                    1,0,0,1,
+                    1,0,0,1,
+                    1,0,0,1,
+                  };
+
+ _triangleTexCoord = { // coordonnées de texture en chaque sommet
+                       0,1,
+                       0,0,
+                       1,1,
+                       1,0
+                     };
+*/
+
+//Q27
+/*
+ _trianglePosition = { // rectangle tracé avec TRIANGLE_STRIP
+                       -0.6,-0.8,0,
+                       -0.6,0.8,0,
+                       0.6,-0.8,0,
+                       0.6,0.8,0
+                     };
+
+ _triangleColor = { // tous les sommets en rouge
+                    1,0,0,1,
+                    1,0,0,1,
+                    1,0,0,1,
+                    1,0,0,1,
+                  };
+
+ _triangleTexCoord = { // coordonnées de texture en chaque sommet
+                       0,0,
+                       0,1,
+                       1,0,
+                       1,1
+                     };
+*/
+
+//Q28
+ /*
    _trianglePosition = {
 
        // rectangle tracé avec TRIANGLE_STRIP
@@ -125,9 +213,15 @@ GLApplication::GLApplication() : _animation(true), _coeff(1.0){
        0.5,0,
        0.5,1
    };
-   */
+*/
+
+//Q30
 //    initRingText(40, 0.2, 0.8);
-//   initRingText2(40, 0.2, 0.8);
+
+//Q31
+//    initRingText2(40, 0.2, 0.8);
+
+//Q32
    initRingText3(40, 0.2, 0.8);
 }
 
@@ -190,16 +284,27 @@ void GLApplication::draw() {
 
   glUseProgram(_shader0);
 
+  //Q26
   glActiveTexture(GL_TEXTURE0); // on travaille avec l'unité de texture 0
   glBindTexture(GL_TEXTURE_2D,_textureId); // l'unité de texture 0 correspond à la texture _textureId // (le fragment shader manipule des unités de textures et non les identifiants de texture directement)
-
-  // dans l'instruction suivante, _textureId correspond à l'image "lagoon.jpg"; cf GLApplication::initTexture pour l'initialisation de _textureId
-  glUniform1f(glGetUniformLocation(_shader0,"coeff"),_coeff);
   glUniform1f(glGetUniformLocation(_shader0,"texture"),0); // on affecte la valeur du sampler2D du fragment shader à l'unité de texture 0.
 
+  // dans l'instruction suivante, _textureId correspond à l'image "lagoon.jpg"; cf GLApplication::initTexture pour l'initialisation de _textureId
+  //Q24
+  glUniform1f(glGetUniformLocation(_shader0,"coeff"),_coeff);
   glBindVertexArray(_triangleVAO);
 
+  //glDrawArrays(GL_TRIANGLES,0,6);
+
+  //Q14
+  //glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+
+  //Q20
+  //glDrawArrays(GL_TRIANGLE_STRIP,0,8);
+
+  //Q21
   glDrawArrays(GL_TRIANGLE_STRIP,0,_trianglePosition.size()/3);
+
   glBindVertexArray(0);
   glUseProgram(0);
 
@@ -324,6 +429,7 @@ void GLApplication::initTriangleBuffer() {
   glBindBuffer(GL_ARRAY_BUFFER,_triangleColorBuffer);
   glBufferData(GL_ARRAY_BUFFER,_triangleColor.size()*sizeof(float),_triangleColor.data(),GL_STATIC_DRAW);
 
+  //Q14
    glGenBuffers(1,&_elementBuffer);
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_elementBuffer);
    glBufferData(GL_ELEMENT_ARRAY_BUFFER,_elementData.size()*sizeof(unsigned int),_elementData.data(),GL_STATIC_DRAW);
@@ -346,9 +452,9 @@ void GLApplication::initTriangleVAO() {
   glBindBuffer(GL_ARRAY_BUFFER,_triangleColorBuffer);
   glVertexAttribPointer(1,4,GL_FLOAT,GL_FALSE,0,0);
 
+  //Q14
   //element
- // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_elementBuffer);
-  // pas besoin ! glVertexAttribPointer(2,1,GL_INT,GL_FALSE,0,0);
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_elementBuffer);
 
 
   //texture
@@ -358,7 +464,6 @@ void GLApplication::initTriangleVAO() {
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
-  //pas besoin !
   glEnableVertexAttribArray(2);
 
 
@@ -367,6 +472,35 @@ void GLApplication::initTriangleVAO() {
 
 
 void GLApplication::initStrip(int nbSlice,float xmin,float xmax,float ymin,float ymax) {
+    int i;
+    float sliceSize = (xmax - xmin) / nbSlice;
+
+    _trianglePosition.clear();
+    _triangleColor.clear();
+
+    // point en bas à gauche
+    addPointToVector(_trianglePosition, xmin, ymin);
+    addColorToVector(_triangleColor, 1., 0., 0.);
+
+
+    for(i = 0; i < nbSlice; i++) {
+
+        // tranche : point en haut à gauche
+        addPointToVector(_trianglePosition, xmin + i * sliceSize, ymax);
+        addColorToVector(_triangleColor, 1., 0., 0.);
+
+        // tranche : point en bas à droite
+        addPointToVector(_trianglePosition, xmin + (i + 1) * sliceSize, ymin);
+        addColorToVector(_triangleColor, 1., 0., 0.);
+    }
+
+    // point en haut à droite
+    addPointToVector(_trianglePosition, xmax, ymax);
+    addColorToVector(_triangleColor, 1., 0, 0);
+
+}
+
+void GLApplication::initStrip2(int nbSlice,float xmin,float xmax,float ymin,float ymax) {
     int i;
     float sliceSize = (xmax - xmin) / nbSlice;
 
